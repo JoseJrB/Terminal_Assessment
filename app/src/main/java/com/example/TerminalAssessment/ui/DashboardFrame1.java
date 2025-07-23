@@ -4,6 +4,14 @@
  */
 package com.example.TerminalAssessment.ui;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author jrbusadre
@@ -212,19 +220,132 @@ public class DashboardFrame1 extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
     
     private void ViewEmployeeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ViewEmployeeBtnActionPerformed
-        // TODO add your handling code here:
+        String empNum = txtEmployeeNumber.getText().trim();
+
+    try (BufferedReader reader = new BufferedReader(new FileReader("Copy of MotorPH Employee Data.csv"))) {
+        String line;
+        boolean found = false;
+
+        while ((line = reader.readLine()) != null) {
+            String[] parts = line.split(",");
+            if (parts.length >= 7 && parts[0].trim().equalsIgnoreCase(empNum)) {
+                txtLastName.setText(parts[1]);
+                txtFirstName.setText(parts[2]);
+                txtSSSNumber.setText(parts[3]);
+                txtPhilHealthNumber.setText(parts[4]);
+                txtTIN.setText(parts[5]);
+                txtPagIBIGNumber.setText(parts[6]);
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            JOptionPane.showMessageDialog(this, "Employee not found.");
+        }
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
     }//GEN-LAST:event_ViewEmployeeBtnActionPerformed
 
     private void DeleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DeleteBtnActionPerformed
-        // TODO add your handling code here:
+        String empNum = txtEmployeeNumber.getText().trim();
+
+    File inputFile = new File("Copy of MotorPH Employee Data.csv");
+    File tempFile = new File("temp.csv");
+    boolean deleted = false;
+
+    try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+         BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
+
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] parts = line.split(",");
+            if (parts.length >= 7 && parts[0].trim().equalsIgnoreCase(empNum)) {
+                deleted = true;
+                continue;
+            }
+            writer.write(line);
+            writer.newLine();
+        }
+
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+        return;
+    }
+
+    if (deleted) {
+        inputFile.delete();
+        tempFile.renameTo(inputFile);
+        JOptionPane.showMessageDialog(this, "Employee deleted.");
+    } else {
+        tempFile.delete();
+        JOptionPane.showMessageDialog(this, "Employee not found.");
     }//GEN-LAST:event_DeleteBtnActionPerformed
 
     private void UpdateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UpdateBtnActionPerformed
-        // TODO add your handling code here:
+        String empNum = txtEmployeeNumber.getText().trim();
+        String updatedLine = String.join(",", empNum,
+            txtLastName.getText().trim(),
+            txtFirstName.getText().trim(),
+            txtSSSNumber.getText().trim(),
+            txtPhilHealthNumber.getText().trim(),
+            txtTIN.getText().trim(),
+            txtPagIBIGNumber.getText().trim());
+
+    File inputFile = new File("Copy of MotorPH Employee Data.csv");
+    File tempFile = new File("temp.csv");
+
+    try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+         BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
+
+        String line;
+        boolean found = false;
+        while ((line = reader.readLine()) != null) {
+            String[] parts = line.split(",");
+            if (parts.length >= 7 && parts[0].equals(empNum)) {
+                writer.write(updatedLine);
+                found = true;
+            } else {
+                writer.write(line);
+            }
+            writer.newLine();
+        }
+
+        if (found) {
+            JOptionPane.showMessageDialog(this, "Employee updated.");
+        } else {
+            JOptionPane.showMessageDialog(this, "Employee not found.");
+        }
+
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+    }
+
+    inputFile.delete();
+    tempFile.renameTo(inputFile);
     }//GEN-LAST:event_UpdateBtnActionPerformed
 
     private void AddBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddBtnActionPerformed
-        // TODO add your handling code here:
+        String empNum = txtEmployeeNumber.getText().trim();
+        String lastName = txtLastName.getText().trim();
+        String firstName = txtFirstName.getText().trim();
+        String sss = txtSSSNumber.getText().trim();
+        String philHealth = txtPhilHealthNumber.getText().trim();
+        String tin = txtTIN.getText().trim();
+        String pagibig = txtPagIBIGNumber.getText().trim();
+
+    if (empNum.isEmpty() || lastName.isEmpty() || firstName.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please fill out required fields.");
+        return;
+    }
+
+    try (BufferedWriter bw = new BufferedWriter(new FileWriter("Copy of MotorPH Employee Data.csv", true))) {
+        bw.write(String.join(",", empNum, lastName, firstName, sss, philHealth, tin, pagibig));
+        bw.newLine();
+        JOptionPane.showMessageDialog(this, "Employee added.");
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+    }
     }//GEN-LAST:event_AddBtnActionPerformed
 
     /**
@@ -252,54 +373,6 @@ public class DashboardFrame1 extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(DashboardFrame1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
